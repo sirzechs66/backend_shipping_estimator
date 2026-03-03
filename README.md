@@ -90,9 +90,28 @@ Dev dependencies:
 - jest
 - supertest
 
----
 
 # ⚙️ Installation & Setup
+
+This project uses Redis to cache shipping charge calculations for improved performance and reduced database load.
+
+**How caching works:**
+ - When a shipping charge is calculated (warehouse → customer), the result is stored in Redis for 5 minutes.
+ - Subsequent requests for the same parameters (warehouse, customer, weight, delivery speed) will return the cached result, speeding up response time.
+ - After 5 minutes, the cache expires and a fresh calculation is performed.
+
+**Implementation:**
+ - Redis client is initialized in `src/db/redis.js`.
+ - Caching logic is in `src/services/shippingService.js` (see `shippingChargeFromWarehouseToCustomer`).
+ - Cache key format: `shipping:<warehouseId>:<customerId>:<weightKg>:<deliverySpeed>`
+ - Expiry: 5 minutes (300 seconds)
+
+**Benefits:**
+ - Faster API responses for repeated queries
+ - Lower database and compute load
+
+**Note:**
+Make sure Redis is running locally for caching to work. If Redis is not available, calculations will still work but without caching.
 
 making the most of the modularity of the code i made sure to add these scalability as a project functionality...
 
