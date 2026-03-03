@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shipping Charge Estimator</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 24px; max-width: 900px; }
+      h1 { margin-bottom: 6px; }
+      .hint { color: #666; margin-bottom: 18px; }
+      .card { border: 1px solid #ddd; border-radius: 10px; padding: 16px; margin: 14px 0; }
+      .row { display: flex; gap: 12px; flex-wrap: wrap; }
+      label { display: block; font-size: 12px; color: #444; margin-bottom: 6px; }
+      input, select { padding: 10px; border: 1px solid #ccc; border-radius: 8px; min-width: 200px; }
+      button { padding: 10px 14px; border: 0; border-radius: 8px; cursor: pointer; }
+      button.primary { background: #111; color: white; }
+      button.secondary { background: #eee; }
+      pre { background: #0b1020; color: #d7e2ff; padding: 12px; border-radius: 10px; overflow: auto; }
+      .actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top: 12px; }
+      .small { font-size: 12px; color: #666; }
+    </style>
+  </head>
+  <body>
+    <h1>Shipping Charge Estimator</h1>
+    <div class="hint">Basic UI to test APIs quickly (for assignment checking).</div>
+
+    <div class="card">
+      <h2>1) Nearest Warehouse</h2>
+      <div class="row">
+        <div>
+          <label>Seller ID</label>
+          <input id="nwSellerId" type="number" placeholder="e.g. 1" />
+        </div>
+        <div>
+          <label>Product ID</label>
+          <input id="nwProductId" type="number" placeholder="e.g. 1" />
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="nearestWarehouse()">Find Nearest Warehouse</button>
+        <span class="small">GET /api/v1/warehouse/nearest</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2) Shipping Charge (Warehouse → Customer)</h2>
+      <div class="row">
+        <div>
+          <label>Warehouse ID</label>
+          <input id="scWarehouseId" type="number" placeholder="e.g. 1" />
+        </div>
+        <div>
+          <label>Customer ID</label>
+          <input id="scCustomerId" type="number" placeholder="e.g. 1" />
+        </div>
+        <div>
+          <label>Delivery Speed</label>
+          <select id="scSpeed">
+            <option value="standard">standard</option>
+            <option value="express">express</option>
+          </select>
+        </div>
+        <div>
+          <label>Weight (kg) (optional)</label>
+          <input id="scWeightKg" type="number" step="0.01" placeholder="default = 1" />
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="shippingCharge()">Calculate Shipping</button>
+        <span class="small">GET /api/v1/shipping-charge</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3) Combined Calculate (Seller → Nearest Warehouse → Customer)</h2>
+      <div class="row">
+        <div>
+          <label>Seller ID</label>
+          <input id="ccSellerId" type="number" placeholder="e.g. 1" />
+        </div>
+        <div>
+          <label>Customer ID</label>
+          <input id="ccCustomerId" type="number" placeholder="e.g. 1" />
+        </div>
+        <div>
+          <label>Delivery Speed</label>
+          <select id="ccSpeed">
+            <option value="standard">standard</option>
+            <option value="express">express</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <div style="flex:1; min-width: 280px;">
+          <label>Items (optional, JSON array)</label>
+          <input
+            id="ccItems"
+            type="text"
+            placeholder='e.g. [{"productId":1,"quantity":2}]'
+            style="width:100%; min-width:280px;"
+          />
+          <div class="small">If items not provided, weightKg is used; else weight is computed from items.</div>
+        </div>
+        <div>
+          <label>Weight (kg) (optional)</label>
+          <input id="ccWeightKg" type="number" step="0.01" placeholder="default = 1" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" onclick="combinedCalculate()">Calculate Total</button>
+        <span class="small">POST /api/v1/shipping-charge/calculate</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Output</h2>
+      <pre id="output">Click any button to see result here...</pre>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

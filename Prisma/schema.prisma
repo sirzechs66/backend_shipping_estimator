@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  code      String?  @unique
+  name      String
+  phone     String
+  lat       Float
+  lng       Float
+  createdAt DateTime @default(now())
+}
+
+model Seller {
+  id        Int      @id @default(autoincrement())
+  code      String?  @unique
+  name      String
+  lat       Float
+  lng       Float
+  createdAt DateTime @default(now())
+  products  Product[]
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  name      String
+  priceRs   Float
+  weightKg  Float
+  lengthCm  Float
+  widthCm   Float
+  heightCm  Float
+
+  sellerId  Int
+  seller    Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model Warehouse {
+  id        Int      @id @default(autoincrement())
+  code      String?  @unique
+  name      String
+  lat       Float
+  lng       Float
+  createdAt DateTime @default(now())
+}
